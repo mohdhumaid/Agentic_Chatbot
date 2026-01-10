@@ -17,7 +17,7 @@ class LoadStreamlitUI:
             st.session_state.IsFetchButtonClicked = False
         # --------------------------------------------
 
-        st.header("🤖 " + self.config.get_page_title())
+        st.header("🧠 " + self.config.get_page_title())
 
         with st.sidebar:
             # Options

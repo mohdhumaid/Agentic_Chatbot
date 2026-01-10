@@ -1,7 +1,7 @@
 import streamlit as st
 
 # MUST be first Streamlit call
-st.set_page_config(page_title="Agentic AI Chatbot", layout="wide")
+st.set_page_config(page_title="Agentic AI Chatbot", page_icon="🤖", layout="wide")
 
 from src.langgraphagenticai.ui.streamlitui.loadui import LoadStreamlitUI
 from src.langgraphagenticai.LLMs.groqllm import GroqLLM
@@ -32,7 +32,19 @@ def load_langgraph_agenticai_app():
 
     # -------- UI --------
     st.title("🤖 Agentic AI Chatbot")
-    st.caption("LangGraph • Groq • Agentic Workflows")
+    #st.caption("🧠 LangGraph   •   ⚡ Groq   •   🤖 Agentic Workflows")
+    st.markdown("---")
+
+    st.markdown(
+    "<div style='text-align:center; font-size:14px; color:#6b7280;'>"
+    "🧠 <b>LangGraph</b> &nbsp;•&nbsp; "
+    "⚡ <b>Groq</b> &nbsp;•&nbsp; "
+    "🤖 <b>Agentic Workflows</b>"
+    "</div>",
+    unsafe_allow_html=True
+)
+
+
 
     ui = LoadStreamlitUI()
     user_input = ui.load_streamlit_ui() or {}
@@ -40,7 +52,7 @@ def load_langgraph_agenticai_app():
     if st.session_state.get("IsFetchButtonClicked"):
         user_message = st.session_state.get("timeframe", "")
     else:
-        user_message = st.chat_input("Enter your message")
+        user_message = st.chat_input("💬 Ask the Agentic AI anything…")
 
     if not user_message:
         st.info("👋 Enter a message to start chatting.")
