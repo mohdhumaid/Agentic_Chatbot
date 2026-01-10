@@ -3,6 +3,13 @@ import streamlit as st
 from langchain_groq import ChatGroq
 from groq import AuthenticationError, BadRequestError, RateLimitError
 
+def clean_key(key: str) -> str:
+    return (
+        key.replace("\n", "")
+           .replace("\r", "")
+           .replace("\u00a0", "")
+           .strip()
+    )
 
 class GroqLLM:
     def __init__(self, user_controls_input: dict):
@@ -13,6 +20,7 @@ class GroqLLM:
         groq_api_key = self.user_controls_input.get("GROQ_API_KEY", "").strip()
         env_groq_key = os.getenv("GROQ_API_KEY", "").strip()
         api_key = groq_api_key or env_groq_key
+        api_key = clean_key(api_key)
 
         selected_groq_model = self.user_controls_input.get("selected_groq_model")
 
