@@ -15,6 +15,9 @@ class LoadStreamlitUI:
 
         if "IsFetchButtonClicked" not in st.session_state:
             st.session_state.IsFetchButtonClicked = False
+
+        if "TAVILY_API_KEY" not in st.session_state:
+            st.session_state.TAVILY_API_KEY = None
         # --------------------------------------------
 
         st.header("🧠 " + self.config.get_page_title())
@@ -49,12 +52,20 @@ class LoadStreamlitUI:
 
             # Tavily cases
             if self.user_controls["selected_usecase"] in ["Chatbot With Web", "AI News"]:
-                self.user_controls["TAVILY_API_KEY"] = st.text_input(
+                tavily_key = st.text_input(
                     "TAVILY API Key", type="password"
                 )
 
-                if not self.user_controls["TAVILY_API_KEY"]:
+                if not tavily_key:
                     st.warning("⚠️ Please enter your TAVILY API key")
+
+                # ✅ SINGLE SOURCE OF TRUTH
+                if tavily_key:
+                    tavily_key = tavily_key.strip()
+                    self.user_controls["tavily_api_key"] = tavily_key
+                    st.session_state.TAVILY_API_KEY = tavily_key
+                else:
+                    self.user_controls["tavily_api_key"] = None
 
             # AI News controls
             if self.user_controls["selected_usecase"] == "AI News":

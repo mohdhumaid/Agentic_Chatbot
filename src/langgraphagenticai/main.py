@@ -16,8 +16,11 @@ def get_llm_model(user_input):
 
 
 @st.cache_resource
-def get_graph(model, usecase):
-    builder = GraphBuilder(model)
+def get_graph(model, usecase, tavily_api_key):
+    builder = GraphBuilder(
+        model=model,
+        tavily_api_key=tavily_api_key
+    )
     return builder.setup_graph(usecase)
 
 
@@ -30,24 +33,30 @@ def load_langgraph_agenticai_app():
     if "timeframe" not in st.session_state:
         st.session_state.timeframe = ""
 
+    if "TAVILY_API_KEY" not in st.session_state:
+        st.session_state.TAVILY_API_KEY = None
+
     # -------- UI --------
     st.title("🤖 Agentic AI Chatbot")
-    #st.caption("🧠 LangGraph   •   ⚡ Groq   •   🤖 Agentic Workflows")
     st.markdown("---")
 
     st.markdown(
-    "<div style='text-align:center; font-size:14px; color:#6b7280;'>"
-    "🧠 <b>LangGraph</b> &nbsp;•&nbsp; "
-    "⚡ <b>Groq</b> &nbsp;•&nbsp; "
-    "🤖 <b>Agentic Workflows</b>"
-    "</div>",
-    unsafe_allow_html=True
-)
-
-
+        "<div style='text-align:center; font-size:14px; color:#6b7280;'>"
+        "🧠 <b>LangGraph</b> &nbsp;•&nbsp; "
+        "⚡ <b>Groq</b> &nbsp;•&nbsp; "
+        "🤖 <b>Agentic Workflows</b>"
+        "</div>",
+        unsafe_allow_html=True
+    )
 
     ui = LoadStreamlitUI()
     user_input = ui.load_streamlit_ui() or {}
+
+    # ✅ CAPTURE Tavily API key from UI
+    tavily_key = user_input.get("tavily_api_key")
+
+    if tavily_key:
+        st.session_state.TAVILY_API_KEY = tavily_key
 
     if st.session_state.get("IsFetchButtonClicked"):
         user_message = st.session_state.get("timeframe", "")
@@ -70,7 +79,16 @@ def load_langgraph_agenticai_app():
             st.error("❌ Select a use case from sidebar")
             st.stop()
 
-        graph = get_graph(model, usecase)
+        # 🚨 AI News requires Tavily
+        if usecase == "ai_news" and not st.session_state.TAVILY_API_KEY:
+            st.error("❌ Tavily API key is required for AI News use case")
+            st.stop()
+
+        graph = get_graph(
+            model=model,
+            usecase=usecase,
+            tavily_api_key=st.session_state.TAVILY_API_KEY
+        )
 
         DisplayResultStreamlit(
             usecase=usecase,
